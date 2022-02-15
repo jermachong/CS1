@@ -1,0 +1,38 @@
+/*
+Author: Jeremy Achong
+2/15/2022
+
+    Struct Operators
+
+*/
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct node_s{
+
+    int data;
+    struct node_s *newptr; 
+
+}node_t;
+
+int empty(node_t *head)
+{
+    return (head==NULL);
+}
+
+node_t *createNode() //builder function
+{
+    node_t *node = (node_t) * malloc(sizeof(node_t)); 
+
+    printf("enter a number"); 
+    scanf("%d", &node->data); 
+
+    node->nextptr = NULL; 
+
+    return node; 
+}
+
+int main()
+{
+    node_t *head = NULL;
+}
