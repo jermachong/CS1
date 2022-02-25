@@ -15,7 +15,7 @@ typedef struct card_s{
 
 //function prototypes
 void rules(); //display rules
-//int playRound(); //simulate round
+int playRound(); //simulate round
 card_t * openCardDeck(); //open the card deck and place into a linkedlist setup
 card_t * insertBackSetup(card_t *node, char *name, int cardrank); //take card from orginial deck and place in back of linked list for setup of game
 int empty(card_t * node); //check to see if linked list is empty
@@ -24,8 +24,8 @@ int deckSize(card_t * head); //count number of nodes in the linked list
 card_t * search(card_t * node, int spot); //search list for a specific spot in the card deck indexing is similar to array setup
 card_t * copyCard(card_t * node); //make a deep copy of card
 card_t * removeCard(card_t * node, int spot); //remove card from linkedlist
-//card_t * insertBackDeck(card_t *head, card_t *node); //place card at end of pile
-//int compareCard(card_t * cardp1, card_t * cardp2); //compare cards
+card_t * insertBackDeck(card_t *head, card_t *node); //place card at end of pile
+int compareCard(card_t * cardp1, card_t * cardp2); //compare cards
 //card_t * moveCardBack(card_t *head); //place card at top of deck to the bottom of the deck
 
 int main()
@@ -193,9 +193,31 @@ int empty(card_t * node)
 	return (node == NULL); //return condition result
 }
 
+int playRound()
+{
+	//shuffle cards
+	//search to random amount no bigger than deckSize
+
+
+
+
+
+	//draw cards to two players
+	//play game until a list / deck is empty
+
+
+
+	//return 1 or 2 depending on results  
+	if(empty(p1))
+		return 2;
+	else
+		return 1; 
+}
+
+
 void cleanUp(card_t * head)
 {
-	while(empty(head->nextptr))
+	while(empty(head))
 	{
 		free(head->type); 
 		free(head);
@@ -217,8 +239,8 @@ int deckSize(card_t * head); //count number of nodes in the linked list
 	*/ 
 
 	//lets try a recursion method
-	if(!empty(head))
-		if(head != NULL) 
+	while(empty(head))
+		if(head == NULL) 
 		{
 			return 0; 
 		}
@@ -277,6 +299,7 @@ card_t * removeCard(card_t * node, int spot) //this is probably done wrong
 	}
 	else
 	{
+		/*
 		while(node->nextptr != NULL)
 		{
 			int i = 0; 
@@ -284,7 +307,50 @@ card_t * removeCard(card_t * node, int spot) //this is probably done wrong
 				node = node->nextptr;
 			
 		}
+		*/
+		card_t *temp = search(node, spot-1);  //retrieve node before the target
+		temp->nextptr = temp->nextptr->nextptr; //redirect node to target->nextptr
+		free(search(node,spot)); //free the target
+
+		//return head
+		return node; 
 	}
-	return node; 
+
+}
+
+card_t * insertBackDeck(card_t *head, card_t *node)
+{
+	
+    if(empty(node)) //check to see if list is empty
+    {
+		printf("Deck is empty...\n");
+		return head; 
+      
+    }
+	//here we know that the list has at least one node
+	
+	card_t *temp = head; //keep pointer to head since we will need to return this address
+	
+	while(temp->nextptr != NULL) //traverse to tail
+		temp = temp->nextptr;
+	
+	temp->nextptr = node; 
+			
+	return head; //return head node since we need our starting point of the linked list	
+}
+
+int compareCard(card_t * cardp1, card_t * cardp2) //1 2 or 0 returned
+{
+	if(cardp1->rank > cardp2->rank)
+	{
+		return 1; 
+	}
+	else if(cardp1->rank < cardp2->rank)
+	{
+		return 0; 
+	}
+	else
+		return 0; 
+
 }
 
