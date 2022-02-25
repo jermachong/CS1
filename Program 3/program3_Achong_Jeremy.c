@@ -19,11 +19,11 @@ void rules(); //display rules
 card_t * openCardDeck(); //open the card deck and place into a linkedlist setup
 card_t * insertBackSetup(card_t *node, char *name, int cardrank); //take card from orginial deck and place in back of linked list for setup of game
 int empty(card_t * node); //check to see if linked list is empty
-//void cleanUp(card_t * head); //free memory to prevent memory leaks
-//int deckSize(card_t * head); //count number of nodes in the linked list
-//card_t * search(card_t * node, int spot); //search list for a specific spot in the card deck indexing is similar to array setup
-//card_t * copyCard(card_t * node); //make a deep copy of card
-//card_t * removeCard(card_t * node, int spot); //remove card from linkedlist
+void cleanUp(card_t * head); //free memory to prevent memory leaks
+int deckSize(card_t * head); //count number of nodes in the linked list
+card_t * search(card_t * node, int spot); //search list for a specific spot in the card deck indexing is similar to array setup
+card_t * copyCard(card_t * node); //make a deep copy of card
+card_t * removeCard(card_t * node, int spot); //remove card from linkedlist
 //card_t * insertBackDeck(card_t *head, card_t *node); //place card at end of pile
 //int compareCard(card_t * cardp1, card_t * cardp2); //compare cards
 //card_t * moveCardBack(card_t *head); //place card at top of deck to the bottom of the deck
@@ -192,3 +192,99 @@ int empty(card_t * node)
 {
 	return (node == NULL); //return condition result
 }
+
+void cleanUp(card_t * head)
+{
+	while(empty(head->nextptr))
+	{
+		free(head->type); 
+		free(head);
+		head = head->nextptr; //iterate to next node 
+	}
+}
+
+int deckSize(card_t * head); //count number of nodes in the linked list
+{
+	/*
+	int count = 0; 
+	while(!(head->nextptr == NULL))
+	{
+		count++; 
+		head = head->nextptr; //iterate to next node
+	}
+
+	return count; //return sum
+	*/ 
+
+	//lets try a recursion method
+	if(!empty(head))
+		if(head != NULL) 
+		{
+			return 0; 
+		}
+		else
+			return 1 + deckSize(head) + head=head->nextptr; 
+}
+
+card_t * search(card_t * node, int spot)
+{
+	for(int i = 0; i < spot; i++)
+	{
+		node = node->nextptr; 
+	}
+
+	return node; 
+}
+
+card_t * copyCard(card_t * node)
+{
+	card_t *copy;
+	copy->rank = node->rank; 
+	strcpy(copy->type, node->type);
+	copy->nextptr = node->nextptr; 
+
+	return copy; 
+}
+
+card_t * removeCard(card_t * node, int spot) //this is probably done wrong
+{/*
+	for(int i = 0; i < spot; i++)
+	{
+		node = node->nextptr; 
+	}
+
+	free(node); 
+
+	//pop
+	while(node->nextptr != NULL)
+	{
+		node = node->nextptr; 
+	}
+*/
+	if(empty(node)) //check if empty
+	{
+		printf("Nothing to remove"); 
+		return NULL; 
+	}
+
+	if(spot == 0)
+	{
+		card_t *temp = node; 
+		printf("Removing %d from deck./n", temp->data); 
+		node = node->nextptr; 
+		free(temp); 
+		return node; 
+	}
+	else
+	{
+		while(node->nextptr != NULL)
+		{
+			int i = 0; 
+			if(i == spot)
+				node = node->nextptr;
+			
+		}
+	}
+	return node; 
+}
+
