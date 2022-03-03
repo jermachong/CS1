@@ -195,17 +195,28 @@ int empty(card_t * node)
 
 int playRound()
 {
-	//shuffle cards
-	//search to random amount no bigger than deckSize
+	//create deck, player 1 pile, and player 2 pile
+	//populate deck, then take from 
+	card_t *deck = openCardDeck(); 
+	card_t *p1; 
+	card_t *p2; 
+
+	while(!(empty(deck))) //random select cards from the deck to go to 
+	{
+		int ranCard = rand() % 52; 
+		int ranCard2 = rand() % 52; 
+		p1 = insertBackDeck(search(deck, ranCard));
+		p2 = insertBackDeck(search(deck, ranCard2));
+		remove(deck,ranCard); 
+		remove(deck,ranCard2); 
+	}
 
 
-
-
-
-	//draw cards to two players
 	//play game until a list / deck is empty
+	while(empty(p1) || empty(p2))
+	{
 
-
+	}
 
 	//return 1 or 2 depending on results  
 	if(empty(p1))
@@ -213,7 +224,6 @@ int playRound()
 	else
 		return 1; 
 }
-
 
 void cleanUp(card_t * head)
 {
@@ -347,7 +357,7 @@ int compareCard(card_t * cardp1, card_t * cardp2) //1 2 or 0 returned
 	}
 	else if(cardp1->rank < cardp2->rank)
 	{
-		return 0; 
+		return 2; 
 	}
 	else
 		return 0; 
