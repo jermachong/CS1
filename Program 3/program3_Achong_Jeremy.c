@@ -26,7 +26,7 @@ card_t * copyCard(card_t * node); //make a deep copy of card
 card_t * removeCard(card_t * node, int spot); //remove card from linkedlist
 card_t * insertBackDeck(card_t *head, card_t *node); //place card at end of pile
 int compareCard(card_t * cardp1, card_t * cardp2); //compare cards
-//card_t * moveCardBack(card_t *head); //place card at top of deck to the bottom of the deck
+card_t * moveCardBack(card_t *head); //place card at top of deck to the bottom of the deck
 
 int main()
 {
@@ -200,6 +200,7 @@ int playRound()
 	card_t *deck = openCardDeck(); 
 	card_t *p1; 
 	card_t *p2; 
+	card_t *reward; //where the tied cards go
 
 	while(!(empty(deck))) //random select cards from the deck to go to 
 	{
@@ -211,11 +212,43 @@ int playRound()
 		remove(deck,ranCard2); 
 	}
 
+	//the player decks are now populated, time to play
 
 	//play game until a list / deck is empty
 	while(empty(p1) || empty(p2))
 	{
+		rewardLength = deckSize(reward); 
 
+		if(p1->rank > p2->rank) //p1 win
+		{
+			moveCardBack(p1); 
+			card_t p2Loss = copyCard(p2);
+			insertBackDeck(p1, p2Loss); 
+			if(rewardLength > 0)
+			{
+				for(int i = 0; i < rewardLength; i++)
+					insertBackDeck(p1, reward); 
+			}
+		}
+		else if(p1->rank < p2->rank) //p2 win 
+		{
+			moveCardBack(p2);
+			card_t p1Loss = copyCard(p1); 
+			insertBackDeck(p2, p1Loss); 
+			if(rewardLength > 0)
+			{
+				for(int i = 0; i < rewardLength; i++)
+					insertBackDeck(p2, reward); 
+			}
+			
+		}
+		else if(p1->rank == p2->rank) //WAR! 
+		{
+			reward = insertBackDeck(reward, p1);  //send to the reward pile
+			reward = insertBackDeck(reward, p2); 
+			p1 = p1->nextptr; 
+			p2 = p2->nextptr;  
+		}
 	}
 
 	//return 1 or 2 depending on results  
@@ -237,16 +270,6 @@ void cleanUp(card_t * head)
 
 int deckSize(card_t * head); //count number of nodes in the linked list
 {
-	/*
-	int count = 0; 
-	while(!(head->nextptr == NULL))
-	{
-		count++; 
-		head = head->nextptr; //iterate to next node
-	}
-
-	return count; //return sum
-	*/ 
 
 	//lets try a recursion method
 	while(empty(head))
@@ -279,20 +302,7 @@ card_t * copyCard(card_t * node)
 }
 
 card_t * removeCard(card_t * node, int spot) //this is probably done wrong
-{/*
-	for(int i = 0; i < spot; i++)
-	{
-		node = node->nextptr; 
-	}
-
-	free(node); 
-
-	//pop
-	while(node->nextptr != NULL)
-	{
-		node = node->nextptr; 
-	}
-*/
+{
 	if(empty(node)) //check if empty
 	{
 		printf("Nothing to remove"); 
@@ -309,15 +319,7 @@ card_t * removeCard(card_t * node, int spot) //this is probably done wrong
 	}
 	else
 	{
-		/*
-		while(node->nextptr != NULL)
-		{
-			int i = 0; 
-			if(i == spot)
-				node = node->nextptr;
-			
-		}
-		*/
+		
 		card_t *temp = search(node, spot-1);  //retrieve node before the target
 		temp->nextptr = temp->nextptr->nextptr; //redirect node to target->nextptr
 		free(search(node,spot)); //free the target
@@ -345,6 +347,7 @@ card_t * insertBackDeck(card_t *head, card_t *node)
 		temp = temp->nextptr;
 	
 	temp->nextptr = node; 
+	node->nextptr = NULL; 
 			
 	return head; //return head node since we need our starting point of the linked list	
 }
@@ -363,4 +366,12 @@ int compareCard(card_t * cardp1, card_t * cardp2) //1 2 or 0 returned
 		return 0; 
 
 }
+
+card_t * moveCardBack(card_t *head) 
+{
+	card_t *temp = search(head, deckSize(head)); 
+	temp->nextptr = head; 
+	head->nextptr = NULL; 
+}
+
 
