@@ -1,7 +1,7 @@
 //Name: Jeremy Achong
 //Dr. Steinberg
 //COP3502 Spring 2022
-//Programming Assignment 3 Skeleton
+//Programming Assignment 3 
 
 #include<stdio.h>
 #include<stdlib.h>
@@ -318,12 +318,11 @@ card_t * removeCard(card_t * node, int spot) //this is probably done wrong
 		card_t *temp = node; 
 		printf("Removing %d from deck./n", temp->data); 
 		node = node->nextptr; 
-		free(temp); 
+		free(temp);
 		return node; 
 	}
 	else
 	{
-		
 		card_t *temp = search(node, spot-1);  //retrieve node before the target
 		temp->nextptr = temp->nextptr->nextptr; //redirect node to target->nextptr
 		free(search(node,spot)); //free the target
@@ -336,7 +335,6 @@ card_t * removeCard(card_t * node, int spot) //this is probably done wrong
 
 card_t * insertBackDeck(card_t *head, card_t *node)
 {
-	
     if(empty(node)) //check to see if list is empty
     {
 		printf("Deck is empty...\n");
@@ -352,7 +350,7 @@ card_t * insertBackDeck(card_t *head, card_t *node)
 	
 	temp->nextptr = node; 
 	node->nextptr = NULL; 
-			
+	
 	return head; //return head node since we need our starting point of the linked list	
 }
 
@@ -373,9 +371,9 @@ int compareCard(card_t * cardp1, card_t * cardp2) //1 2 or 0 returned
 
 card_t * moveCardBack(card_t *head) 
 {
-	card_t *temp = search(head, deckSize(head)); 
-	temp->nextptr = head; 
-	head->nextptr = NULL; 
+	card_t *temp = search(head, deckSize(head)); //traverse to decksize 
+	temp->nextptr = head; //set temp next pointer to the head
+	head->nextptr = NULL; //the head points to nothing
 }
 
 
