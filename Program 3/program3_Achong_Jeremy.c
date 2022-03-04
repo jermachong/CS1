@@ -188,7 +188,7 @@ card_t * insertBackSetup(card_t *node, char *name, int cardrank)
 	return head; //return head node since we need our starting point of the linked list
 }
 
-int empty(card_t * node)
+int empty(card_t * node) 
 {
 	return (node == NULL); //return condition result
 }
@@ -202,7 +202,7 @@ int playRound()
 	card_t *p2; 
 	card_t *reward; //where the tied cards go
 
-	while(!(empty(deck))) //random select cards from the deck to go to 
+	while((empty(deck))) //random select cards from the deck to go to 
 	{
 		int ranCard = rand() % 52; 
 		int ranCard2 = rand() % 52; 
@@ -212,37 +212,39 @@ int playRound()
 		remove(deck,ranCard2); 
 	}
 
+	cleanUp(deck); //don't need the deck anymore
+
 	//the player decks are now populated, time to play
 
 	//play game until a list / deck is empty
-	while(empty(p1) || empty(p2))
+	while( !empty(p1) || !empty(p2))
 	{
 		rewardLength = deckSize(reward); 
 
-		if(p1->rank > p2->rank) //p1 win
+		if(compareCard(p1,p2) == 1) //p1 win
 		{
 			moveCardBack(p1); 
 			card_t p2Loss = copyCard(p2);
-			insertBackDeck(p1, p2Loss); 
+			p1 = insertBackDeck(p1, p2Loss); 
 			if(rewardLength > 0)
 			{
 				for(int i = 0; i < rewardLength; i++)
-					insertBackDeck(p1, reward); 
+					p1 = insertBackDeck(p1, reward); 
 			}
 		}
-		else if(p1->rank < p2->rank) //p2 win 
+		else if(compareCard(p1,p2) == 2) //p2 win 
 		{
 			moveCardBack(p2);
 			card_t p1Loss = copyCard(p1); 
-			insertBackDeck(p2, p1Loss); 
+			p2 = insertBackDeck(p2, p1Loss); 
 			if(rewardLength > 0)
 			{
 				for(int i = 0; i < rewardLength; i++)
-					insertBackDeck(p2, reward); 
+					p2 = insertBackDeck(p2, reward); 
 			}
 			
 		}
-		else if(p1->rank == p2->rank) //WAR! 
+		else if(compareCard(p1,p2) == 0 ) //WAR! 
 		{
 			reward = insertBackDeck(reward, p1);  //send to the reward pile
 			reward = insertBackDeck(reward, p2); 
@@ -250,6 +252,10 @@ int playRound()
 			p2 = p2->nextptr;  
 		}
 	}
+
+	cleanUp(reward); 
+	cleanUp(p1); 
+	cleanUp(p2); 
 
 	//return 1 or 2 depending on results  
 	if(empty(p1))
@@ -260,7 +266,7 @@ int playRound()
 
 void cleanUp(card_t * head)
 {
-	while(empty(head))
+	while(!empty(head))
 	{
 		free(head->type); 
 		free(head);
@@ -270,15 +276,13 @@ void cleanUp(card_t * head)
 
 int deckSize(card_t * head); //count number of nodes in the linked list
 {
-
 	//lets try a recursion method
-	while(empty(head))
 		if(head == NULL) 
 		{
 			return 0; 
 		}
 		else
-			return 1 + deckSize(head) + head=head->nextptr; 
+			return 1 + deckSize(head->nextptr); 
 }
 
 card_t * search(card_t * node, int spot)
