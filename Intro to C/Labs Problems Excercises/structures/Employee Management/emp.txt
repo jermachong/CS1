@@ -1,0 +1,6 @@
+e1 Adam 500
+e2 Smith 700
+e3 Robin  450
+e4 Jack 800
+e5 Martin 600
+e6 Nusair 700

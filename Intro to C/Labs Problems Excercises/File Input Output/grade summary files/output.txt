@@ -1,0 +1,20 @@
+Sample Input/Output 1:
+ 
+Summary of students:
+========
+ID: s1 Lname: adam Total: 73.55 Grade: C
+ID: s2 Lname: smith Total: 81.06 Grade: B
+ID: s3 Lname: robin Total: 66.22 Grade: F
+ID: s4 Lname: nusair Total: 92.45 Grade: A
+ID: s5 Lname: martin Total: 67.16 Grade: F
+ID: s6 Lname: jack Total: 92.45 Grade: A
+
+========
+First student with the highest total is s4 nusair 92.45
+Data written in summary.txt file
+Enter a last name to search: Martin
+martin was found in the list. Here is the details:
+ID: s5 Lname: martin Total: 67.16
+Grades:
+Midterm: 60.00, Final term: 70.00, quizzes:
+70.00 80.00 85.00 55.50
