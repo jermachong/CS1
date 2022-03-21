@@ -12,7 +12,7 @@ import functools
 #this is where we will put the input... yes they are global variables but this is ok to do for this scenario since this is a script
 #it is list and each item will be string representing input for each question
 #example  ['1 2 3', '2' , '4.2 41.4']
-qinputs = ['0'] 
+qinputs = ['0 1'] 
 
 #important info to input
 exefile = "program3"

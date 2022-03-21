@@ -198,22 +198,23 @@ int playRound()
 	//create deck, player 1 pile, and player 2 pile
 	//populate deck, then take from 
 	card_t *deck = openCardDeck(); 
-	card_t *p1; 
-	card_t *p2; 
-	card_t *reward; //where the tied cards go
+	card_t *p1 = NULL; 
+	card_t *p2 = NULL; 
+	card_t *reward = NULL; //where the tied cards go
+	int roundresult = 0; 
 
 	printf("There are %d cards in the deck.\n", deckSize(deck)); 
 
-	while(!(empty(deck))) //random select cards from the deck to go to 
+	while(!empty(deck)) //random select cards from the deck to go to 
 	{
-
 		int ranCard = rand() % deckSize(deck)-1; 
 		p1 = insertBackDeck(p1, search(deck,ranCard)); //move card from deck to p1 pile
         deck = removeCard(deck,ranCard);
 
-        int ranCard2 = rand() % deckSize(deck)-1; 
+        int ranCard2 = rand() % deckSize(deck)-1;
         p2 = insertBackDeck(p2, search(deck,ranCard2)); 
         deck = removeCard(deck,ranCard2); 
+		
 	}
 
 	free(deck); //don't need the deck anymore
@@ -223,70 +224,175 @@ int playRound()
 	//play game until a list / deck is empty
 	while( !empty(p1) || !empty(p2))
 	{
-		int rewardLength = deckSize(reward); 
+		if(deckSize(p1) == 0 || deckSize(p2) == 0)
+			break; 
 
-		printf("Player 1 pulled out %s.\tPlayer 2 pulled out %s.\n",p1->type,p2->type);
+		int rewardLength = deckSize(reward); 
 		
-		int result = compareCard(p1,p2); 
+		int result = compareCard(p1,p2);  
 
 		if(result == 1) //p1 win
 		{	
-			//printf("Player 1 won that round.\n"); 
-			moveCardBack(p1); 
+			printf("Player 1 won that round.\n"); 
+			p1 = moveCardBack(p1); 
 			p1 = insertBackDeck(p1, search(p2,0)); 
 			p2 = removeCard(p2, 0); 
-			if(rewardLength > 0)
-			{
-				for(int i = 0; i < rewardLength; i++)
-					p1 = insertBackDeck(p1, reward); 
-			}
+
 		}
 		else if(result == 2) //p2 win 
 		{
-			//printf("Player 2 won that round.\n"); 
-			moveCardBack(p2);
+			printf("Player 2 won that round.\n");  
+			p2 = moveCardBack(p2);
 			p2 = insertBackDeck(p2, search(p1,0)); 
 			p1 = removeCard(p1,0); 
-			if(rewardLength > 0)
-			{
-				for(int i = 0; i < rewardLength; i++)
-					p2 = insertBackDeck(p2, reward); 
-			}
-			
+	
 		}
 		else if(result == 0 ) //WAR! 
 		{
 			printf("Ugh oh...We have a tie! W-A-R!\n");
-			reward = insertBackDeck(reward, p1);  //send to the reward pile
-			reward = insertBackDeck(reward, p2);
 
-			p1 = p1->nextptr; 
-			p2 = p2->nextptr;  
+			int warFlag = 1; 
+
+			while(warFlag == 1)
+			{
+				//One card left
+				if(deckSize(p1) == 1 && deckSize(p2) > 1)
+				{	
+					p1 = insertBackDeck(p1,p2); 
+					removeCard(p2,0); 
+					warFlag--; 
+					
+				}
+				else if(deckSize(p2) == 1 && deckSize(p1) > 1)
+				{
+					p2 = insertBackDeck(p2,p1);
+					removeCard(p1,0); 
+					warFlag--; 
+					
+				}
+
+				//two cards left
+				if(deckSize(p1) == 2 || deckSize(p2) == 2)
+				{
+					int warResult = compareCard(p1->nextptr,p2->nextptr); 
+					reward = insertBackDeck(reward, p1);
+					reward = insertBackDeck(reward,p1->nextptr);
+
+					reward = insertBackDeck(reward, p2);
+					reward = insertBackDeck(reward,p2->nextptr);
+
+					if(warResult == 1)
+					{
+						for(int i = 0; i < deckSize(reward); i++) {
+							p1 = insertBackDeck(p1,reward);
+							removeCard(p2,0); 
+						}
+						warFlag--; 
+					
+						
+					}
+					else if(warResult == 2)
+					{
+						for(int i = 0; i < deckSize(reward); i++) {
+							p2 = insertBackDeck(p2,reward); 
+							removeCard(p1,0);
+						}
+						warFlag--;
+						
+					} 
+
+				}
+				
+				//WAR with 3 or more cards in each deck
+				reward = insertBackDeck(reward, p1);  //p1 card 1 send to the reward pile
+				reward = insertBackDeck(reward,p1->nextptr); //face down p1 card 2 to reward
+ 
+				reward = insertBackDeck(reward, p2); //p2 card 1 to reward
+				reward = insertBackDeck(reward,p2->nextptr); //face down p2 card 2 to reward
+
+				int warResult = compareCard(p1->nextptr->nextptr,p2->nextptr->nextptr);
+
+				reward = insertBackDeck(reward,p1->nextptr->nextptr); //send faceup card 3s to reward pile
+				reward = insertBackDeck(reward,p2->nextptr->nextptr);
+
+
+				//remove the cards from player piles
+				for(int i = 0; i < 3; i++)
+				{
+					p1 = removeCard(p1,0);
+					p2 = removeCard(p2,0);
+				}
+				
+				if(warResult == 1) //p1 wins war
+				{
+					printf("Player 1 won that W-A-R!\n"); 
+
+					while(!empty(reward))
+					{
+						p1 = insertBackDeck(p1,reward);
+						reward = removeCard(reward,0);
+					}
+						 
+					warFlag--; 
+					
+				}
+				else if(warResult == 2) //p2 wins war
+				{	
+					printf("Player 2 won that W-A-R!\n"); 
+
+					while(!empty(reward))
+					{
+						p2 = insertBackDeck(p2,reward);
+						reward = removeCard(reward,0);
+					}
+
+					warFlag--; 
+				}
+				else if(warResult == 0) //ANOTHER TIE!!!
+				{
+					continue; //repeat loop
+				}
+
+			}
+
 		}
+
+		printf("Player 1 has %d cards.\n",deckSize(p1)); 
+		printf("Player 2 has %d cards.\n",deckSize(p2)); 
+
 	}
 
-	cleanUp(reward); 
+	
+	//store win result
+	if(deckSize(p1) == 0)
+		roundresult = 2; 
+	else 
+		roundresult = 1; 
+
+	//clean piles
 	cleanUp(p1); 
 	cleanUp(p2); 
+	cleanUp(reward); 
 
-	//return 1 or 2 depending on results  
-	if(empty(p1))
+
+	//return win result
+	if(roundresult == 2)
 		return 2;
-	else
+	else 
 		return 1; 
 }
 
 void cleanUp(card_t * head)
 {
-    //printf("entered clean\n");
-    if(head == NULL)
+	/*
+    if(deckSize(head) == 1)
     {
-        //printf("nothing to clean :)\n"); 
-        exit(1); 
+        free(head->type); 
+		free(head); 
+		head = NULL; 
     }
     else if(head->nextptr == NULL)
     {
-        //printf("\tcase 1 single free\n"); 
         free(head->type); 
         free(head); 
     }
@@ -294,24 +400,27 @@ void cleanUp(card_t * head)
     {
 	    while(head != NULL)
 	    { 
-        //printf("\tcase 2 multiple free"); 
-		free(head->type); 
-        //printf("\t1 succ\n");
+			free(head->type); 
+			free(head);
+			if(head->nextptr != NULL)
+				head = head->nextptr; //iterate to next node 
 
-		free(head);
-        //printf("\t2 succ\n"); 
-
-        if(head->nextptr != NULL)
-		    head = head->nextptr; //iterate to next node 
-        printf("\t3 succ\n"); 
-
-        //printf("\t%d",deckSize(head));  
     	}
     }
+	*/
+	if(deckSize(head) == 0)
+	{
+		head = NULL; 
+	}
 
-    printf("\tCLEANED\n"); 
+	while(head->nextptr!=NULL)
+	{
+		free(head->type);
+		free(head);
+		head = head ->nextptr;
+	}
+
 }
-
 
 int deckSize(card_t * head) //count number of nodes in the linked list
 {
@@ -323,6 +432,7 @@ int deckSize(card_t * head) //count number of nodes in the linked list
 		else
 			return 1 + deckSize(head->nextptr); 
 }
+
 card_t * search(card_t * node, int spot)
 {
 	card_t *temp = node; 
@@ -340,8 +450,8 @@ card_t * search(card_t * node, int spot)
 	
 }
 
-card_t * copyCard(card_t * node) //Good
-{
+card_t * copyCard(card_t * node) 
+{	
 	card_t *copy = (card_t *) malloc(sizeof(card_t)); //allocate for card
 
 	copy->rank = node->rank; //set the rank
@@ -349,15 +459,11 @@ card_t * copyCard(card_t * node) //Good
 	copy->type = (char *) malloc(sizeof(char) * 20); //allocate for type
 	strcpy(copy->type, node->type); //set type
 
-	//copy->nextptr = node->nextptr; 
-
 	return copy; 
-}
+}	
 
 card_t * removeCard(card_t * node, int spot) 
 {
-    //printf("Entered Remove\n"); 
-    //printf("\tremoving spot %d\n",spot); 
 
 	if(empty(node)) //check if empty
 	{
@@ -371,35 +477,33 @@ card_t * removeCard(card_t * node, int spot)
 
 	if(head == temp)
 	{
-		//printf("\t1st case\n"); 
         head = head->nextptr; 
         temp->nextptr = NULL;
-        cleanUp(temp); 
+		free(temp->type); 
+        free(temp); 
 
-        //printf("\t1st case success\n"); 
         return head; 
 	}
     else if (spot == deckSize(node)) //removing the last spot of linked list
     {
-        //printf("\t2nd case\n");
         card_t *temp2 = search(node, spot-1);
-        //temp->nextptr = NULL; 
-        cleanUp(temp);
+  
+		free(temp->type); 
+        free(temp);
 		temp2->nextptr = NULL; 
-        //printf("\t2nd case success\n"); 
+
     }
 	else
 	{  
-        //printf("\t3rd case\n"); 
+
         card_t *temp2 = search(node, spot-1);
 		temp2->nextptr = temp2->nextptr->nextptr; //redirect node to target->nextptr
-        //printf("\t\tset prev node to next next\n"); 
     
         temp->nextptr = NULL;
-		cleanUp(temp);   //free the target
+		free(temp->type); 
+		free(temp);   //free the target
 
 		//return head
-        //printf("\t3rd case success\n"); 
 		return node; 
 	}
      
@@ -418,7 +522,6 @@ card_t * insertBackDeck(card_t *head, card_t *node)
     
 	if(empty(head)) //if the list has no nodes
 	{
-		printf("Head is empty...\n"); 
 		head = copyCard(node); 
         head->nextptr = NULL; 
         return head; 
@@ -432,12 +535,9 @@ card_t * insertBackDeck(card_t *head, card_t *node)
 	temp->nextptr = copyCard(node); 
     temp->nextptr->nextptr = NULL; 
 
-	//node->nextptr = NULL; 
 	
-	printf("IBD SUCCESS!\n"); 
 	return head; //return head node since we need our starting point of the linked list	
 }
-
 int compareCard(card_t * cardp1, card_t * cardp2) //1 2 or 0 returned
 {
 	printf("Player 1 pulled out %s.\tPlayer 2 pulled out %s.\n",cardp1->type,cardp2->type); 
@@ -456,9 +556,15 @@ int compareCard(card_t * cardp1, card_t * cardp2) //1 2 or 0 returned
 
 card_t * moveCardBack(card_t *head) 
 {
-	card_t *temp = search(head, deckSize(head)); //traverse to decksize 
+	card_t *temp = head; //traverse to decksize 
+	card_t *temp2 = head->nextptr;  
+	while(temp->nextptr != NULL) //traverse to tail
+		temp = temp->nextptr;
+
 	temp->nextptr = head; //set temp next pointer to the head
 	head->nextptr = NULL; //the head points to nothing
+
+	return temp2; 
 }
 
 
