@@ -130,24 +130,49 @@ void preorder(node_t * root)
 	}
 }
 
-/*
-	check if t2 is null,	
-		take t1's original node
-	
-	check if t1 is null
-		take t2's node in that place
-
-	if both are null,
-		escape
-	
-	other than that, perform add/subtract 
-		continue to traverse down the left and right subtrees.
-
-*/
-
 node_t *addTree (node_t *t1, node_t *t2)
 {	
-	//Checks
+		/*
+		if(t1 == NULL && t2 == NULL)
+		{
+			return t1;
+		}
+		else if(t2 == NULL && t1 != NULL) //traverse no modification
+		{
+
+		}
+		else if(t2 != NULL && t1 == NULL) 
+		{ 
+
+		} 
+		else if(t2->rightchild != NULL && t1->rightchild == NULL)
+		{
+			addTree(t1->leftchild,t2->leftchild);
+			addTree(t1->rightchild,t2->rightchild);
+
+			t1->data = t1->data + t2->data; 
+			t1->rightchild = createNode(t2->rightchild->data); 
+			//printf("creating node %d\n", t2->rightchild->data);
+		}
+		else if(t2->leftchild != NULL && t1->leftchild == NULL)
+		{
+			addTree(t1->leftchild,t2->leftchild);
+			addTree(t1->rightchild,t2->rightchild);
+
+			t1->data = t1->data + t2->data; 
+			t1->leftchild = createNode(t2->leftchild->data); 
+			//printf("creating node %d\n", t2->leftchild->data);
+		}
+		else
+		{
+			addTree(t1->leftchild,t2->leftchild);
+			addTree(t1->rightchild,t2->rightchild); 
+			
+			//printf("%d + %d = %d\n", t1->data, t2->data, t1->data+t2->data);
+			t1->data = t1->data + t2->data;
+		}
+		*/
+
 	if(t2 == NULL)
 	{
 		return t1; 
@@ -162,8 +187,8 @@ node_t *addTree (node_t *t1, node_t *t2)
 	}
 	else
 	{
-		t1->data = t1->data + t2->data; //operation
-		t1->rightchild = addTree(t1->rightchild,t2->rightchild); //recursive calls
+		t1->data = t1->data + t2->data; 
+		t1->rightchild = addTree(t1->rightchild,t2->rightchild);
 		t1->leftchild = addTree(t1->leftchild,t2->leftchild); 
 	}
 	return t1; 
@@ -172,7 +197,41 @@ node_t *addTree (node_t *t1, node_t *t2)
 
 node_t *subtractTree (node_t *t1, node_t *t2)
 {
-	//checks
+	/*
+	if(t1 == NULL && t2 == NULL)
+	{
+		return t1;
+	}
+	else if(t2 == NULL && t1 != NULL) //traverse no modification
+	{
+
+	}
+	else if(t2 != NULL && t1 == NULL) 
+	{ 
+
+	}
+	else if(t2->rightchild != NULL && t1->rightchild == NULL || t2->leftchild != NULL && t1->leftchild == NULL ) //t2 right isnt empty
+	{
+		subtractTree(t1->leftchild,t2->leftchild);
+		subtractTree(t1->rightchild,t2->rightchild);
+
+		t1->rightchild = createNode(t2->rightchild->data); 
+		t1->leftchild = createNode(t2->leftchild->data);
+		//printf("creating node %d\n", t2->rightchild->data);
+		t1->data = t1->data - t2->data; 
+		
+	}
+	else //no create node
+	{
+		subtractTree(t1->leftchild,t2->leftchild);
+		subtractTree(t1->rightchild,t2->rightchild);
+
+		//printf("%d - %d = %d\n", t1->data, t2->data, t1->data-t2->data); 
+		t1->data = t1->data - t2->data; 
+	}
+	*/
+
+	
 	if(t2 == NULL)
 	{
 		return t1; 
@@ -187,8 +246,8 @@ node_t *subtractTree (node_t *t1, node_t *t2)
 	}
 	else
 	{
-		t1->data = t1->data - t2->data; //operation
-		t1->rightchild = subtractTree(t1->rightchild,t2->rightchild); //recursive calls
+		t1->data = t1->data - t2->data; 
+		t1->rightchild = subtractTree(t1->rightchild,t2->rightchild);
 		t1->leftchild = subtractTree(t1->leftchild,t2->leftchild); 
 	}
 	return t1; 
