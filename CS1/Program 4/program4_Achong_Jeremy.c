@@ -132,6 +132,7 @@ void preorder(node_t * root)
 
 node_t *addTree (node_t *t1, node_t *t2)
 {	
+		
 		if(t1 == NULL && t2 == NULL)
 		{
 			return t1;
@@ -148,24 +149,29 @@ node_t *addTree (node_t *t1, node_t *t2)
 		{
 			addTree(t1->leftchild,t2->leftchild);
 			addTree(t1->rightchild,t2->rightchild);
+
 			t1->data = t1->data + t2->data; 
 			t1->rightchild = createNode(t2->rightchild->data); 
+			//printf("creating node %d\n", t2->rightchild->data);
 		}
 		else if(t2->leftchild != NULL && t1->leftchild == NULL)
 		{
 			addTree(t1->leftchild,t2->leftchild);
 			addTree(t1->rightchild,t2->rightchild);
+
 			t1->data = t1->data + t2->data; 
 			t1->leftchild = createNode(t2->leftchild->data); 
+			//printf("creating node %d\n", t2->leftchild->data);
 		}
 		else
 		{
 			addTree(t1->leftchild,t2->leftchild);
 			addTree(t1->rightchild,t2->rightchild); 
-			printf("%d + %d = %d\n", t1->data, t2->data, t1->data+t2->data);
+			
+			//printf("%d + %d = %d\n", t1->data, t2->data, t1->data+t2->data);
 			t1->data = t1->data + t2->data;
 		}
-
+		
 
 }
 
@@ -183,26 +189,23 @@ node_t *subtractTree (node_t *t1, node_t *t2)
 	{ 
 
 	}
-	else if(t2->leftchild != NULL && t1->leftchild == NULL)
+	else if(t2->rightchild != NULL && t1->rightchild == NULL || t2->leftchild != NULL && t1->leftchild == NULL ) //t2 right isnt empty
 	{
 		subtractTree(t1->leftchild,t2->leftchild);
 		subtractTree(t1->rightchild,t2->rightchild);
-		t1->data = t1->data - t2->data; 
-		t1->leftchild = createNode(t2->leftchild->data); 
-	}
-	else if(t2->rightchild != NULL && t1->rightchild == NULL)
-	{
-		subtractTree(t1->leftchild,t2->leftchild);
-		subtractTree(t1->rightchild,t2->rightchild);
-		t1->data = t1->data - t2->data; 
-		t1->rightchild = createNode(t2->rightchild->data); 
-	}
-	else
-	{
-		subtractTree(t1->leftchild,t2->leftchild);
-		subtractTree(t1->rightchild,t2->rightchild);
-		printf("%d - %d = %d\n", t1->data, t2->data, t1->data-t2->data); 
-		t1->data = t1->data - t2->data; 
 
+		t1->rightchild = createNode(t2->rightchild->data); 
+		t1->leftchild = createNode(t2->leftchild->data);
+		//printf("creating node %d\n", t2->rightchild->data);
+		t1->data = t1->data - t2->data; 
+		
+	}
+	else //no create node
+	{
+		subtractTree(t1->leftchild,t2->leftchild);
+		subtractTree(t1->rightchild,t2->rightchild);
+
+		//printf("%d - %d = %d\n", t1->data, t2->data, t1->data-t2->data); 
+		t1->data = t1->data - t2->data; 
 	}
 }
