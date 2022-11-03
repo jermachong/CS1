@@ -63,9 +63,8 @@ int blobDetect(int **picture, int x, int y, int limit)
 		if picture[x][y] == 1
 			'clean' it to 0 and find adjacent blobs from respective coordinate 
 
-		keep going until the blob ends
-	*/
-	/* 
+		keep going until the blob ends 
+		 
 		x-1y-1	xy-1	x+1y-1
 		x-1y	xy		x+1y
 		x-1y+1	xy+1	x+1y+1
