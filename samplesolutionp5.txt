@@ -1,0 +1,2 @@
+Enter seed: Team 1 Rank Average is: 1.817000
+Team 2 Rank Average is: 4.231000
